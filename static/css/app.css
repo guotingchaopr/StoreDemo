@@ -98,13 +98,24 @@
 	justify-content:center;
 	align-items:center;
 	font-weight: bold;
-	font-size: 20px;
+	font-size: 1.2em;
+	margin-bottom: .6em;
 }
 .logo span{
 	margin-right: 5px;
-	width: 18px;
-	height: 18px;
+	width: 1.2em;
+	height: 1.2em;
 	background-size: 100% 100%;
 	-webkit-background-size: 100% 100%;
 }
- 
+.Hot-Navigator{
+	text-align: center;
+}
+.Hot-Navigator ul li{
+	padding: 1.1em 0;
+}
+.Hot-Navigator .ui-col img,.Hot-Navigator .ui-col p{
+	height: 28px;
+}
+
+

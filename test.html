@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <title>Test</title>
+    <link rel="stylesheet" type="text/css" href="styles/simditor.css" />
+    <link rel="stylesheet" type="text/css" href="styles/simditor-emoji.css" />
+    <link type="text/css" href="scripts/prism.css" rel="stylesheet" />
+    <link rel="stylesheet" href="styles/app.css"> 
+</head>
+<body>
+    <div class="container">
+    </div>
+    <div class="bala">
+        <textarea id="editor" placeholder="Balabala" autofocus></textarea>
+        <button id="push">提问</button>
+    </div>
+    <script type="text/javascript" src="scripts/prism.js"></script>
+    <script type="text/javascript" src="scripts/jquery.min.js"></script>
+    <script type="text/javascript" src="scripts/module.min.js"></script>
+    <script type="text/javascript" src="scripts/hotkeys.min.js"></script>
+    <script type="text/javascript" src="scripts/uploader.min.js"></script>
+    <script type="text/javascript" src="scripts/simditor.js"></script>
+    <script type="text/javascript" src="scripts/simditor-plugin.js"></script>
+    <script type="text/javascript">
+$(function(){
+    loadAsk();
+})
+var config = {
+  textarea: $('#editor'),
+  placeholder: '输入你想要的提问吧',
+  hotkey:false,
+  toolbar: [
+  'bold', 'italic', 'underline', 
+  'color','hr', 'alignment', 
+  '|','ol', 'image' ,'html' ,'table','|',"emoji" , "code"],
+  codeLanguages:[
+    { name: 'CSS', value: 'css' },
+    { name: 'Less', value: 'less' },
+    { name: 'Sass', value: 'sass' },
+    { name: 'HTML,XML', value: 'html' },
+    { name: 'JSON', value: 'json' },
+    { name: 'Java', value: 'java' },
+    { name: 'JavaScript', value: 'js' },
+    { name: 'Markdown', value: 'markdown' },
+    { name: 'PHP', value: 'php' },
+    { name: 'SQL', value: 'sql'}
+  ],
+  upload:{
+    url: 'http://192.168.0.100:3000/upload',
+    params: null,
+    fileKey: 'images',
+    connectionCount: 1,
+    leaveConfirm: '正在上传中 确定要退出吗?'
+  },
+  pasteImage: true,
+  defaultImage:"images/500.png",
+  allowedAttributes:{
+    img:['src', 'alt',  'data-non-image']
+  }
+};
+var editor = new Simditor(config);
+//提交处理
+$("#push").click(function(){
+    var html = editor.getValue();
+    if(html.trim().length > 10){
+        $.ajax({
+            method:"post",
+            url:"http://192.168.0.100:3000/asks/addAsk",
+            data:{
+                uid:"1",
+                tag:"1",
+                content:html
+            },
+            success:function(data){
+                if(data.result){
+                   editor.setValue("");
+                }
+            }
+        });
+    }else{
+        alert("问题不能少于 10个字吧");
+        editor.focus();
+    }
+})
+
+//问题列表加载处理
+function loadAsk(){
+    $.ajax({
+        method:"get",
+        url:"http://192.168.0.100:3000/asks/all",
+        success:function(data){
+            for(var i = 0 ; i < data.data.length; i++){
+                var content = data.data[i].u_content;
+                console.log(content);
+                var div = $("<div/>");
+                div.append(content);
+                $(".container").append(div);
+            }
+            Prism.highlightAll(); //动态加载的需要手动调用一次
+        }
+    })
+}
+    </script>
+</body>
+</html>

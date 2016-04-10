@@ -4542,8 +4542,8 @@ ImageButton = (function(superClass) {
         if (!$img.hasClass('loading') && !$img.hasClass('uploading')) {
           return;
         }
-        width = "20%";
-        height = "20%";
+        width = img.width > 200 ?"100%":img.width;
+        height = "auto";
         $img.attr({
           src: src,
           width: width,

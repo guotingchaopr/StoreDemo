@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="styles/simditor-emoji.css" />
     <link type="text/css" href="scripts/prism.css" rel="stylesheet" />
     <link rel="stylesheet" href="styles/app.css"> 
-</head>
+</head
 <body>
     <div class="container">
     </div>
@@ -49,17 +49,14 @@ var config = {
     { name: 'SQL', value: 'sql'}
   ],
   upload:{
-    url: 'http://192.168.0.100:3000/upload',
+    url: 'http://127.0.0.1:3000/upload',
     params: null,
     fileKey: 'images',
     connectionCount: 1,
     leaveConfirm: '正在上传中 确定要退出吗?'
   },
   pasteImage: true,
-  defaultImage:"images/500.png",
-  allowedAttributes:{
-    img:['src', 'alt',  'data-non-image']
-  }
+  defaultImage:"images/500.png"
 };
 var editor = new Simditor(config);
 //提交处理
@@ -68,15 +65,19 @@ $("#push").click(function(){
     if(html.trim().length > 10){
         $.ajax({
             method:"post",
-            url:"http://192.168.0.100:3000/asks/addAsk",
+            url:"http://127.0.0.1:3000/asks/addAsk",
             data:{
                 uid:"1",
                 tag:"1",
                 content:html
             },
+            beforeSend:function(){
+                $("<div id='pushBlock'></div>").appendTo("body");
+            },
             success:function(data){
                 if(data.result){
                    editor.setValue("");
+                   loadAsk();
                 }
             }
         });
@@ -86,20 +87,26 @@ $("#push").click(function(){
     }
 })
 
+
+
 //问题列表加载处理
 function loadAsk(){
+    $(".container").html("");
     $.ajax({
         method:"get",
-        url:"http://192.168.0.100:3000/asks/all",
+        url:"http://127.0.0.1:3000/asks/all",
         success:function(data){
             for(var i = 0 ; i < data.data.length; i++){
                 var content = data.data[i].u_content;
-                console.log(content);
-                var div = $("<div/>");
+                var div = $("<div class='feed'/>");
+                var header = $("<div class='feed-head'/>");
+                    header.append("<p class='author'>来自:<span data-uid='"+data.data[i].uid+"'>"+data.data[i].nickName+"</span></p>")
+                div.append(header);
                 div.append(content);
                 $(".container").append(div);
             }
             Prism.highlightAll(); //动态加载的需要手动调用一次
+            $("#pushBlock").remove();
         }
     })
 }
